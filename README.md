@@ -1,4 +1,4 @@
-# Telecom Data Pipeline
+# AWS Telecom Data Pipeline
 
 **Apache Spark | AWS MWAA (Airflow) | Amazon EMR Serverless | S3 | Redshift Serverless | Parquet | Data Lake | ETL**
 
