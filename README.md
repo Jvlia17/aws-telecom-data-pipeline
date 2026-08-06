@@ -90,7 +90,7 @@ The complete workflow is orchestrated using AWS Managed Workflows for Apache Air
 
 Current Airflow DAG:
 
-![pipeline.png](..%2F..%2Fpipeline.png)
+<img width="200" height="354" alt="pipeline" src="https://github.com/user-attachments/assets/64815c24-0a20-4576-93f0-fd1c4960a9e2" />
 
 ## 🥉 Bronze Layer - Raw Data Storage
 
@@ -182,7 +182,7 @@ FROM city_summary
 ORDER BY avg_download_speed_mbps DESC;
 ```
 
-![wynik_query.png](..%2F..%2Fwynik_query.png)
+<img width="1118" height="136" alt="wynik_query" src="https://github.com/user-attachments/assets/893017e1-2128-49e4-927a-c77980d0986b" />
 
 ---
 
