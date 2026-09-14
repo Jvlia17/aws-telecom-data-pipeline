@@ -12,7 +12,7 @@ Both implementations follow the Medallion Data Lake Architecture (Bronze → Sil
 
 ---
 
-# 📖 Project Overview
+# Project Overview
 
 Modern telecommunication systems generate large volumes of network performance measurements from mobile devices and infrastructure equipment.
 
@@ -27,13 +27,13 @@ The pipeline is built using commonly used technologies and patterns from modern 
 
 ---
 
-# 🎯 Business Problem
+# Business Problem
 
 Raw telecom measurements often contain missing values, duplicated records or inconsistent formats. Network analysts require reliable, structured and optimized datasets that can support analytical workloads. The goal of this project is to automate the transformation of raw telecom data into analytics-ready datasets.
 
 ---
 
-## 🥉 Bronze Layer - Raw Data Storage
+## Bronze Layer - Raw Data Storage
 
 The dataset is synthetically generated.
 
@@ -43,7 +43,7 @@ The dataset contains attributes such as device model, network type, download spe
 
 The raw data is stored in Amazon S3 in the AWS implementation and in a Databricks Volume in the Databricks implementation.
 
-## 🥈 Silver Layer - Data Cleaning and Transformation
+## Silver Layer - Data Cleaning and Transformation
 
 The Silver layer contains cleaned and transformed telecom measurements prepared for further analysis.
 
@@ -51,7 +51,7 @@ Transformations might include duplicate removal, missing value handling, schema 
 
 The AWS implementation stores the Silver layer as Parquet files, while the Databricks implementation stores it as a Delta table.
 
-## 🧪 Data Quality Validation
+## Data Quality Validation
 
 Before creating analytical datasets, the pipeline performs validation checks on the Silver layer.
 
@@ -61,7 +61,7 @@ The AWS implementation performs checks including missing value validation, schem
 
 The Databricks implementation validates that the Silver layer contains data before continuing to the Gold transformation.
 
-## 🥇 Gold Layer - Analytics Ready Data
+## Gold Layer - Analytics Ready Data
 
 The Gold layer contains aggregated datasets prepared for analytical workloads.
 
@@ -79,7 +79,7 @@ The aggregations include metrics such as average download speed, average upload 
 
 ---
 
-# 🧱 Databricks Implementation
+# Databricks Implementation
 
 Before running the Databricks implementation, Databricks must be configured with the required AWS permissions. This includes setting up the appropriate AWS IAM role and permissions to allow Databricks to securely access the required AWS resources.
 
@@ -146,7 +146,7 @@ The results demonstrate how the Gold layer can be queried directly in Databricks
 
 ---
 
-# ☁️ AWS Implementation
+# AWS Implementation
 
 ```
                      Raw Telecom Data (CSV)
@@ -200,7 +200,7 @@ ORDER BY avg_download_speed_mbps DESC;
 
 ---
 
-# ☁️ AWS Services Used
+# AWS Services Used
 
 * Amazon S3
 * Amazon EMR Serverless
@@ -209,7 +209,7 @@ ORDER BY avg_download_speed_mbps DESC;
 * AWS IAM
 * Amazon CloudWatch Logs
 
-# 🧱 Databricks Technologies
+# Databricks Technologies
 
 * Databricks
 * PySpark
@@ -221,7 +221,7 @@ ORDER BY avg_download_speed_mbps DESC;
 
 ---
 
-# 🧪 Technologies Used
+# Technologies Used
 
 * Python
 * PySpark
@@ -239,7 +239,7 @@ ORDER BY avg_download_speed_mbps DESC;
 
 ---
 
-# 📁 Project Structure
+# Project Structure
 
 
 ```
@@ -294,7 +294,7 @@ telecom-data-pipeline/
 
 ---
 
-# 🚀 How to Run the Pipeline
+# How to Run the Pipeline
 
 1. Generate synthetic telecom measurements.
 2. Upload data to the S3 Bronze layer.
