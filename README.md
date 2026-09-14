@@ -180,6 +180,8 @@ ORDER BY avg_download_speed_mbps DESC;
 * AWS IAM
 * Amazon CloudWatch Logs
 
+---
+
 # Databricks Technologies
 
 * Databricks
@@ -188,24 +190,6 @@ ORDER BY avg_download_speed_mbps DESC;
 * Unity Catalog
 * Databricks Jobs
 * GitHub integration
-
----
-
-# Technologies Used
-
-* Python
-* Apache Spark
-* PySpark
-* Apache Airflow
-* Amazon S3
-* Amazon EMR Serverless
-* Amazon Redshift Serverless
-* Databricks
-* Delta Lake
-* Unity Catalog
-* Parquet
-* ETL / ELT
-* Medallion Data Lake Architecture
 
 ---
 
