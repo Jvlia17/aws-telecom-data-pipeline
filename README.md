@@ -47,7 +47,7 @@ The raw data is stored in Amazon S3 in the AWS implementation and in a Databrick
 
 The Silver layer contains cleaned and transformed telecom measurements prepared for further analysis.
 
-Transformations include duplicate removal, missing value handling, schema validation, datatype standardization and feature creation.
+Transformations might include duplicate removal, missing value handling, schema validation, datatype standardization and feature creation.
 
 The AWS implementation stores the Silver layer as Parquet files, while the Databricks implementation stores it as a Delta table.
 
@@ -80,6 +80,8 @@ The aggregations include metrics such as average download speed, average upload 
 ---
 
 # 🧱 Databricks Implementation
+
+Before running the Databricks implementation, Databricks must be configured with the required AWS permissions. This includes setting up the appropriate AWS IAM role and permissions to allow Databricks to securely access the required AWS resources.
 
 The project contains two implementations of the Bronze → Silver → Gold data pipeline.
 
