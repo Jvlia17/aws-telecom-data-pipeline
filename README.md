@@ -33,39 +33,15 @@ Raw telecom measurements often contain missing values, duplicated records or inc
 
 ---
 
-## Bronze Layer - Raw Data Storage
+# Medallion Data Lake Architecture
 
-The dataset is synthetically generated.
+The dataset is synthetically generated and contains telecom network measurements such as device model, network type, download and upload speed, latency, signal strength, GPS coordinates and timestamps.
 
-The Bronze layer stores the original raw telecom network measurements before any transformations.
+Bronze stores the original raw data. It is stored in Amazon S3 in the AWS implementation and in a Databricks Volume in the Databricks implementation.
 
-The dataset contains attributes such as device model, network type, download speed, upload speed, latency, signal strength, GPS coordinates and timestamps.
+Silver contains cleaned and transformed data prepared for analysis. The AWS implementation stores Silver as Parquet files, while Databricks stores it as a Delta table. The pipeline also performs validation checks on the Silver layer before continuing to Gold.
 
-The raw data is stored in Amazon S3 in the AWS implementation and in a Databricks Volume in the Databricks implementation.
-
-## Silver Layer - Data Cleaning and Transformation
-
-The Silver layer contains cleaned and transformed telecom measurements prepared for further analysis.
-
-Transformations might include duplicate removal, missing value handling, schema validation, datatype standardization and feature creation.
-
-The AWS implementation stores the Silver layer as Parquet files, while the Databricks implementation stores it as a Delta table.
-
-## Data Quality Validation
-
-Before creating analytical datasets, the pipeline performs validation checks on the Silver layer.
-
-The validation process helps ensure that the processed data is suitable for downstream analytical workloads.
-
-The AWS implementation performs checks including missing value validation, schema validation, value range validation and data consistency checks.
-
-The Databricks implementation validates that the Silver layer contains data before continuing to the Gold transformation.
-
-## Gold Layer - Analytics Ready Data
-
-The Gold layer contains aggregated datasets prepared for analytical workloads.
-
-Current datasets:
+Gold contains aggregated datasets for analytical workloads:
 
 ```
 gold/
@@ -75,7 +51,7 @@ gold/
 └── network_summary/
 ```
 
-The aggregations include metrics such as average download speed, average upload speed, average latency, average signal strength and measurement counts.
+The aggregations include average download and upload speed, latency, signal strength and measurement counts.
 
 ---
 
@@ -83,13 +59,8 @@ The aggregations include metrics such as average download speed, average upload 
 
 Before running the Databricks implementation, Databricks must be configured with the required AWS permissions. This includes setting up the appropriate AWS IAM role and permissions to allow Databricks to securely access the required AWS resources.
 
-The project contains two implementations of the Bronze → Silver → Gold data pipeline.
-
 ```
                     Raw Telecom Data (CSV)
-                              │
-                              ▼
-                    Databricks Volume
                               │
                               ▼
                     Bronze Delta Table
@@ -307,3 +278,13 @@ telecom-data-pipeline/
 9. Spark creates Gold analytical datasets.
 10. Airflow loads Gold datasets into Amazon Redshift Serverless.
 
+For Databricks:
+1. Generate synthetic telecom measurements.
+2. Store the raw dataset in the AWS S3 Bronze layer.
+3. Configure Databricks with the required AWS IAM permissions and Unity Catalog access.
+4. Configure the Databricks notebooks and pipeline dependencies.
+5. Run the telecom_databricks_pipeline Databricks Job.
+6. bronze_to_silver processes the Bronze data and creates the Silver Delta table.
+7. quality_check validates the Silver layer.
+8. silver_to_gold creates the Gold analytical tables.
+9. Query the resulting Gold tables using Databricks SQL.
