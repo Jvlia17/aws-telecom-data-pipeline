@@ -112,12 +112,34 @@ The Databricks workflow is orchestrated using Databricks Jobs.
 
 Current Job workflow:
 
-<img width="962" height="327" alt="jobs pipelines" src="https://github.com/user-attachments/assets/17cbbb1f-f8c9-43ae-b561-711a5a6ba6c3" />
+<img width="600" alt="jobs pipelines" src="https://github.com/user-attachments/assets/fb60638c-d438-49a1-8339-8d4c946482f6" />
 
 The Databricks pipeline successfully processes the raw dataset and creates the Bronze, Silver and Gold Delta tables in Unity Catalog.
+The resulting Gold tables can be queried directly using Databricks SQL.
 
-<img width="833" height="497" alt="workspace" src="https://github.com/user-attachments/assets/55c1ddf0-e4be-4420-90e3-4f5c3770b1b8" />
+Example analytical query using the city-level summary:
 
+```sql
+SELECT
+    city,
+    measurements,
+    ROUND(avg_download_speed_mbps, 2) AS avg_download_speed_mbps,
+    ROUND(avg_upload_speed_mbps, 2) AS avg_upload_speed_mbps,
+    ROUND(avg_latency_ms, 2) AS avg_latency_ms,
+    ROUND(avg_signal_strength_dbm, 2) AS avg_signal_strength_dbm
+FROM workspace.default.telecom_city_summary
+WHERE measurements >= 50
+ORDER BY avg_download_speed_mbps DESC;
+```
+
+Query result:
+<img width="1371" height="192" alt="last" src="https://github.com/user-attachments/assets/d2c92208-df59-4913-9aa9-7cd6250233e9" />
+
+The query returns city-level network performance metrics for cities with at least 50 measurements.
+
+In this example, Vancouver has the highest average download speed at 80.57 Mbps, followed by Toronto at 79.92 Mbps and Calgary at 79.84 Mbps. The average upload speeds are similar across all three cities, while latency remains around 39–40 ms.
+
+The results demonstrate how the Gold layer can be queried directly in Databricks to compare network performance across cities.
 
 
 ---
