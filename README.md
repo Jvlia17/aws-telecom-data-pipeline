@@ -267,6 +267,7 @@ telecom-data-pipeline/
 
 # How to Run the Pipeline
 
+For AWS:
 1. Generate synthetic telecom measurements.
 2. Upload data to the S3 Bronze layer.
 3. Upload PySpark jobs and dependencies to Amazon S3.
