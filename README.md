@@ -37,7 +37,7 @@ Raw telecom measurements often contain missing values, duplicated records or inc
 
 The dataset is synthetically generated and contains telecom network measurements such as device model, network type, download and upload speed, latency, signal strength, GPS coordinates and timestamps.
 
-Bronze stores the original raw data. It is stored in Amazon S3 in the AWS implementation and in a Databricks Volume in the Databricks implementation.
+Bronze stores the original raw data in Amazon S3. In the Databricks implementation, the data is read from the S3 Bronze layer and stored as a Delta table in Unity Catalog.
 
 Silver contains cleaned and transformed data prepared for analysis. The AWS implementation stores Silver as Parquet files, while Databricks stores it as a Delta table. The pipeline also performs validation checks on the Silver layer before continuing to Gold.
 
@@ -187,7 +187,6 @@ ORDER BY avg_download_speed_mbps DESC;
 * Delta Lake
 * Unity Catalog
 * Databricks Jobs
-* Databricks Volumes
 * GitHub integration
 
 ---
@@ -195,17 +194,17 @@ ORDER BY avg_download_speed_mbps DESC;
 # Technologies Used
 
 * Python
-* PySpark
 * Apache Spark
+* PySpark
 * Apache Airflow
-* AWS MWAA
-* Amazon EMR Serverless
 * Amazon S3
+* Amazon EMR Serverless
 * Amazon Redshift Serverless
+* Databricks
+* Delta Lake
+* Unity Catalog
 * Parquet
-* AWS IAM
-* CloudWatch
-* ETL / ELT Concepts
+* ETL / ELT
 * Medallion Data Lake Architecture
 
 ---
