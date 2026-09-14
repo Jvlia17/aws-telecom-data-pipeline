@@ -1,10 +1,14 @@
 # AWS Telecom Data Pipeline
 
-**Apache Spark | AWS MWAA (Airflow) | Amazon EMR Serverless | S3 | Redshift Serverless | Parquet | Data Lake | ETL**
+**Apache Spark | Databricks | AWS MWAA | EMR Serverless | S3 | Redshift Serverless | Delta Lake | ETL**
 
-End-to-End Cloud Data Engineering pipeline that processes telecom network performance measurements using Apache Spark running on Amazon EMR Serverless and orchestrated with Apache Airflow on Amazon MWAA.
+End-to-End Cloud Data Engineering project that processes telecom network performance measurements using Apache Spark, with two implementations of the same pipeline:
 
-The project follows a modern Medallion Data Lake Architecture (Bronze → Silver → Gold), transforming raw telecom measurements into optimized analytical datasets stored in Amazon S3 and loaded into Amazon Redshift Serverless for analytics.
+- a Databricks implementation using PySpark, Delta Lake, Unity Catalog and Databricks Jobs
+- an AWS-based pipeline using Amazon EMR Serverless and Apache Airflow on Amazon MWAA
+
+
+Both implementations follow the Medallion Data Lake Architecture (Bronze → Silver → Gold), transforming raw telecom measurements into analytics-ready datasets.
 
 ---
 
@@ -19,36 +23,106 @@ Raw operational data requires automated processing before it can be used for:
 * dashboards
 * analytical applications
 
-This project demonstrates a production-style Data Engineering workflow by implementing:
-
-* cloud-based data storage
-* distributed Spark processing
-* workflow orchestration
-* data transformation layers
-* data quality validation
-* analytical data warehouse loading
-
 The pipeline is built using commonly used technologies and patterns from modern Data Engineering environments.
 
 ---
 
 # 🎯 Business Problem
 
-Raw telecom measurements often contain:
-
-* missing values
-* duplicated records
-* inconsistent formats
-* invalid measurements
-* inefficient storage formats
-
-Network analysts require reliable, structured and optimized datasets that can support analytical workloads.
-
-The goal of this project is to automate the transformation of raw telecom data into analytics-ready datasets.
+Raw telecom measurements often contain missing values, duplicated records or inconsistent formats. Network analysts require reliable, structured and optimized datasets that can support analytical workloads. The goal of this project is to automate the transformation of raw telecom data into analytics-ready datasets.
 
 ---
 
-# 🏗️ Data Pipeline Architecture
+## 🥉 Bronze Layer - Raw Data Storage
+
+The dataset is synthetically generated.
+
+The Bronze layer stores the original raw telecom network measurements before any transformations.
+
+The dataset contains attributes such as device model, network type, download speed, upload speed, latency, signal strength, GPS coordinates and timestamps.
+
+The raw data is stored in Amazon S3 in the AWS implementation and in a Databricks Volume in the Databricks implementation.
+
+## 🥈 Silver Layer - Data Cleaning and Transformation
+
+The Silver layer contains cleaned and transformed telecom measurements prepared for further analysis.
+
+Transformations include duplicate removal, missing value handling, schema validation, datatype standardization and feature creation.
+
+The AWS implementation stores the Silver layer as Parquet files, while the Databricks implementation stores it as a Delta table.
+
+## 🧪 Data Quality Validation
+
+Before creating analytical datasets, the pipeline performs validation checks on the Silver layer.
+
+The validation process helps ensure that the processed data is suitable for downstream analytical workloads.
+
+The AWS implementation performs checks including missing value validation, schema validation, value range validation and data consistency checks.
+
+The Databricks implementation validates that the Silver layer contains data before continuing to the Gold transformation.
+
+## 🥇 Gold Layer - Analytics Ready Data
+
+The Gold layer contains aggregated datasets prepared for analytical workloads.
+
+Current datasets:
+
+```
+gold/
+
+├── city_summary/
+├── device_summary/
+└── network_summary/
+```
+
+The aggregations include metrics such as average download speed, average upload speed, average latency, average signal strength and measurement counts.
+
+---
+
+# 🧱 Databricks Implementation
+
+The project contains two implementations of the Bronze → Silver → Gold data pipeline.
+
+```
+                    Raw Telecom Data (CSV)
+                              │
+                              ▼
+                    Databricks Volume
+                              │
+                              ▼
+                    Bronze Delta Table
+                              │
+                              ▼
+                    bronze_to_silver
+                              │
+                              ▼
+                    Silver Delta Table
+                              │
+                              ▼
+                    quality_check
+                              │
+                              ▼
+                    silver_to_gold
+                              │
+                              ▼
+                    Gold Delta Tables
+```
+
+The Databricks workflow is orchestrated using Databricks Jobs.
+
+Current Job workflow:
+
+<img width="962" height="327" alt="jobs pipelines" src="https://github.com/user-attachments/assets/17cbbb1f-f8c9-43ae-b561-711a5a6ba6c3" />
+
+The Databricks pipeline successfully processes the raw dataset and creates the Bronze, Silver and Gold Delta tables in Unity Catalog.
+
+<img width="833" height="497" alt="workspace" src="https://github.com/user-attachments/assets/55c1ddf0-e4be-4420-90e3-4f5c3770b1b8" />
+
+
+
+---
+
+# ☁️ AWS Implementation
 
 ```
                      Raw Telecom Data (CSV)
@@ -82,97 +156,13 @@ The goal of this project is to automate the transformation of raw telecom data i
                 Analytics-ready Warehouse Tables
 ```
 
----
-
-# 🔄 Pipeline Workflow
-
 The complete workflow is orchestrated using AWS Managed Workflows for Apache Airflow (MWAA).
 
 Current Airflow DAG:
 
 <img width="200" height="354" alt="pipeline" src="https://github.com/user-attachments/assets/64815c24-0a20-4576-93f0-fd1c4960a9e2" />
 
-## 🥉 Bronze Layer - Raw Data Storage
-
-The dataset is synthetically generated for demonstration purposes.
-Raw telecom network measurements are stored in Amazon S3.
-
-
-The dataset contains attributes such as:
-
-* device model
-* network type
-* download speed
-* upload speed
-* latency
-* signal strength
-* GPS coordinates
-* timestamps
-
-The Bronze layer keeps the original source data before any transformations.
-
-## 🥈 Silver Layer - Data Cleaning and Transformation
-
-PySpark jobs running on Amazon EMR Serverless process raw data and create a cleaned Silver layer.
-
-Transformations include:
-
-* duplicate removal
-* missing value handling
-* schema validation
-* datatype standardization
-
-Processed data is stored as optimized Parquet files.
-
-## 🧪 Data Quality Validation
-
-Before creating analytical datasets, the pipeline performs validation checks on the Silver layer.
-
-Current checks include:
-
-* missing value validation
-* schema validation
-* value range validation
-* data consistency checks
-
-The quality check is executed as an Airflow task before the Gold transformation step.
-
-## 🥇 Gold Layer - Analytics Ready Data
-
-The Gold layer contains aggregated datasets prepared for analytical workloads.
-
-Current datasets:
-
-```
-gold/
-
-├── city_summary/
-├── device_summary/
-└── network_summary/
-```
-
-The aggregations include metrics such as:
-
-* average download speed
-* average upload speed
-* average latency
-* average signal strength
-* measurement counts
-
-These datasets are optimized for:
-
-* dashboards
-* reporting
-* analytical SQL queries
-* downstream applications
-
----
-
-# 🏢 Amazon Redshift Serverless Warehouse Layer
-
 Gold datasets are loaded into Amazon Redshift Serverless using Airflow-managed COPY operations.
-
-The warehouse contains analytical tables:
 
 Example analytical query:
 
@@ -188,15 +178,22 @@ ORDER BY avg_download_speed_mbps DESC;
 
 # ☁️ AWS Services Used
 
-## Currently Implemented
+* Amazon S3
+* Amazon EMR Serverless
+* AWS MWAA (Apache Airflow)
+* Amazon Redshift Serverless
+* AWS IAM
+* Amazon CloudWatch Logs
 
-- ✅ Amazon S3
-- ✅ Amazon EMR Serverless
-- ✅ AWS MWAA (Apache Airflow)
-- ✅ Amazon Redshift Serverless
-- ✅ AWS IAM
-- ✅ Amazon CloudWatch Logs
-- ✅ Apache Spark
+# 🧱 Databricks Technologies
+
+* Databricks
+* PySpark
+* Delta Lake
+* Unity Catalog
+* Databricks Jobs
+* Databricks Volumes
+* GitHub integration
 
 ---
 
@@ -228,8 +225,12 @@ telecom-data-pipeline/
 │   └── dags/
 │       └── telecom_pipeline_dag.py
 │
+├── databricks/
+│   ├── bronze_to_silver
+│   ├── quality_check
+│   └── silver_to_gold
+│
 ├── package/
-│   │
 │   ├── jobs/
 │   │   ├── bronze_to_silver.py
 │   │   └── silver_to_gold.py
