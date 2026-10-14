@@ -1,0 +1,18 @@
+
+# Generated datasets - keep locally, don't commit
+data/*
+!data/.gitkeep
+!data/raw/
+data/raw/*
+!data/raw/.gitkeep
+
+# Local environment
+.env
+.env.*
+!.env.example
+.idea/
+
+# Terraform local files
+**/.terraform/
+**/terraform.tfstate
+**/terraform.tfstate.*
