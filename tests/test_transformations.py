@@ -1,8 +1,11 @@
-﻿from datetime import datetime
+﻿from pyspark.sql.types import StructField, StructType, StringType
 
-from pyspark.sql.types import StructField, StructType, StringType
-
-from telecom_pipeline.transformations import normalize_measurements
+from telecom_pipeline.transformations import (
+    aggregate_city_metrics,
+    normalize_measurements,
+    split_measurements,
+    validate_measurements,
+)
 
 
 def test_normalize_measurements(spark):
@@ -41,12 +44,8 @@ def test_normalize_measurements(spark):
     assert result["latency_ms"] == 18.0
     assert result["event_timestamp"] is not None
 
-def test_validate_invalid_city(spark):
-    from telecom_pipeline.transformations import (
-        normalize_measurements,
-        validate_measurements,
-    )
 
+def test_validate_invalid_city(spark):
     schema = StructType([
         StructField("id", StringType(), True),
         StructField("timestamp", StringType(), True),
@@ -79,12 +78,8 @@ def test_validate_invalid_city(spark):
 
     assert result["quality_issue"] == "invalid_city"
 
-def test_validate_invalid_download_speed(spark):
-    from telecom_pipeline.transformations import (
-        normalize_measurements,
-        validate_measurements,
-    )
 
+def test_validate_invalid_download_speed(spark):
     schema = StructType([
         StructField("id", StringType(), True),
         StructField("timestamp", StringType(), True),
@@ -120,12 +115,6 @@ def test_validate_invalid_download_speed(spark):
 
 
 def test_split_measurements_keeps_earliest_duplicate(spark):
-    from telecom_pipeline.transformations import (
-        normalize_measurements,
-        validate_measurements,
-        split_measurements,
-    )
-
     schema = StructType([
         StructField("id", StringType(), True),
         StructField("timestamp", StringType(), True),
@@ -173,12 +162,6 @@ def test_split_measurements_keeps_earliest_duplicate(spark):
     assert quarantine_rows[0]["quality_issue"] == "duplicate_id"
 
 
-
-from pyspark.sql import SparkSession
-
-from telecom_pipeline.transformations import aggregate_city_metrics
-
-
 def test_aggregate_city_metrics(spark):
     data = [
         ("Calgary", 100.0, 20.0, 10.0),
@@ -188,16 +171,16 @@ def test_aggregate_city_metrics(spark):
 
     df = spark.createDataFrame(
         data,
-        ["city", "download_speed", "upload_speed", "latency"],
+        ["city", "download_speed_mbps", "upload_speed_mbps", "latency_ms"],
     )
 
     result = aggregate_city_metrics(df)
     rows = {row["city"]: row.asDict() for row in result.collect()}
 
     assert rows["Calgary"]["measurement_count"] == 2
-    assert rows["Calgary"]["avg_download_speed"] == 150.0
-    assert rows["Calgary"]["avg_upload_speed"] == 30.0
-    assert rows["Calgary"]["avg_latency"] == 20.0
+    assert rows["Calgary"]["avg_download_speed_mbps"] == 150.0
+    assert rows["Calgary"]["avg_upload_speed_mbps"] == 30.0
+    assert rows["Calgary"]["avg_latency_ms"] == 20.0
 
     assert rows["Edmonton"]["measurement_count"] == 1
-    assert rows["Edmonton"]["avg_download_speed"] == 150.0
+    assert rows["Edmonton"]["avg_download_speed_mbps"] == 150.0
