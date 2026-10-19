@@ -1,4 +1,3 @@
-
 resource "aws_glue_job" "telecom_bronze_to_silver" {
   name     = "telecom-bronze-to-silver"
   role_arn = "arn:aws:iam::152174417047:role/AWSGlueServiceRole-telecom-pipeline"
@@ -21,6 +20,7 @@ resource "aws_glue_job" "telecom_bronze_to_silver" {
     "--enable-continuous-cloudwatch-log" = "true"
     "--enable-spark-ui"                  = "false"
     "--TempDir"                          = "s3://telecom-data-pipeline-jvlia17/tmp/"
+    "--extra-py-files"                   = "s3://telecom-data-pipeline-jvlia17/scripts/telecom_pipeline.zip"
   }
 
   tags = {
@@ -30,6 +30,45 @@ resource "aws_glue_job" "telecom_bronze_to_silver" {
   }
 
   depends_on = [
-    aws_s3_object.glue_script
+    aws_s3_object.glue_script,
+    aws_s3_object.glue_package
+  ]
+}
+
+
+resource "aws_glue_job" "telecom_silver_to_gold" {
+  name     = "telecom-silver-to-gold"
+  role_arn = "arn:aws:iam::152174417047:role/AWSGlueServiceRole-telecom-pipeline"
+
+  glue_version      = "5.0"
+  worker_type       = "G.1X"
+  number_of_workers = 2
+  max_retries       = 0
+  timeout           = 5
+
+  command {
+    name            = "glueetl"
+    script_location = "s3://telecom-data-pipeline-jvlia17/scripts/silver_to_gold.py"
+    python_version  = "3"
+  }
+
+  default_arguments = {
+    "--job-language"                     = "python"
+    "--enable-metrics"                   = "true"
+    "--enable-continuous-cloudwatch-log" = "true"
+    "--enable-spark-ui"                  = "false"
+    "--TempDir"                          = "s3://telecom-data-pipeline-jvlia17/tmp/"
+    "--extra-py-files"                   = "s3://telecom-data-pipeline-jvlia17/scripts/telecom_pipeline.zip"
+  }
+
+  tags = {
+    Project     = "telecom-data-pipeline"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+
+  depends_on = [
+    aws_s3_object.silver_to_gold_script,
+    aws_s3_object.glue_package
   ]
 }

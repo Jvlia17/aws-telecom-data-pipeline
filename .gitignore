@@ -29,3 +29,6 @@ venv/
 .pytest_cache/
 .coverage
 htmlcov/
+
+# Generated Terraform package
+terraform/telecom_pipeline.zip

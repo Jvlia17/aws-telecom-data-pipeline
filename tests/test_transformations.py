@@ -171,3 +171,33 @@ def test_split_measurements_keeps_earliest_duplicate(spark):
     assert silver_rows[0]["download_speed_mbps"] == 100.0
     assert len(quarantine_rows) == 1
     assert quarantine_rows[0]["quality_issue"] == "duplicate_id"
+
+
+
+from pyspark.sql import SparkSession
+
+from telecom_pipeline.transformations import aggregate_city_metrics
+
+
+def test_aggregate_city_metrics(spark):
+    data = [
+        ("Calgary", 100.0, 20.0, 10.0),
+        ("Calgary", 200.0, 40.0, 30.0),
+        ("Edmonton", 150.0, 30.0, 20.0),
+    ]
+
+    df = spark.createDataFrame(
+        data,
+        ["city", "download_speed", "upload_speed", "latency"],
+    )
+
+    result = aggregate_city_metrics(df)
+    rows = {row["city"]: row.asDict() for row in result.collect()}
+
+    assert rows["Calgary"]["measurement_count"] == 2
+    assert rows["Calgary"]["avg_download_speed"] == 150.0
+    assert rows["Calgary"]["avg_upload_speed"] == 30.0
+    assert rows["Calgary"]["avg_latency"] == 20.0
+
+    assert rows["Edmonton"]["measurement_count"] == 1
+    assert rows["Edmonton"]["avg_download_speed"] == 150.0

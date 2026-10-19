@@ -1,4 +1,4 @@
-﻿name: CI
+name: CI
 
 on:
   push:
@@ -53,3 +53,42 @@ jobs:
         env:
           PYTHONPATH: src
         run: python -m pytest -v
+
+  deploy:
+    name: Deploy to AWS
+    runs-on: ubuntu-latest
+    needs: validate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+
+    permissions:
+      contents: read
+      id-token: write
+
+    concurrency:
+      group: terraform-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.16.5"
+          terraform_wrapper: false
+
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Initialize Terraform with remote state
+        run: terraform -chdir=terraform init -input=false
+
+      - name: Create Terraform plan
+        run: terraform -chdir=terraform plan -input=false -out=tfplan
+
+      - name: Apply Terraform plan
+        run: terraform -chdir=terraform apply -input=false -auto-approve tfplan
