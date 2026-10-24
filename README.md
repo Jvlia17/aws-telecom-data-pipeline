@@ -32,12 +32,24 @@ The data is not completely random. Each city and network type (4G or 5G) has its
 
 The results in Athena show differences in network performance across the five Canadian cities. 
 
+First, here are the results for the 4G network:
+
 <p align="center">
-  <img src="images/athena.png" alt="Image">
+  <img src="images/athena_1.png" alt="Image">
 </p>
 
-- Toronto has the highest average download and upload speeds, while Calgary has the lowest average download speed. 
-- Toronto also has the lowest latency, meaning a faster response time. 
-- Vancouver has the highest latency. 
+- Download speed: Calgary has the fastest download speed at 110.03 Mbps, while Vancouver has the slowest at 74.95 Mbps.
+- Upload speed: Calgary has the fastest upload speed at 29.98 Mbps, while Vancouver has the slowest at 16.20 Mbps.
+- Latency: Calgary has the lowest latency at 18 ms, while Vancouver has the highest at 37.94 ms.
 
-These results help the company compare network performance across cities, spot areas with weaker performance, and decide where improvements may be needed.
+Next, here are the results for the 5G network:
+
+<p align="center">
+  <img src="images/Athena_2.png" alt="Image">
+</p>
+
+- Download speed: Toronto has the highest speed (279.97 Mbps), while Calgary has the lowest (165.02 Mbps).
+- Upload speed: Toronto has the highest speed (50.15 Mbps), while Calgary has the lowest (25.00 Mbps).
+- Latency: Toronto has the lowest latency (14 ms), while Calgary has the highest (26.82 ms).
+
+These results help the company compare network performance across cities and network types, identify areas with weaker performance, and determine where improvements may be needed.
