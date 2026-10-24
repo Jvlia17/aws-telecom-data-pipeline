@@ -162,25 +162,44 @@ def test_split_measurements_keeps_earliest_duplicate(spark):
     assert quarantine_rows[0]["quality_issue"] == "duplicate_id"
 
 
+
 def test_aggregate_city_metrics(spark):
     data = [
-        ("Calgary", 100.0, 20.0, 10.0),
-        ("Calgary", 200.0, 40.0, 30.0),
-        ("Edmonton", 150.0, 30.0, 20.0),
+        ("Calgary", "4G", 100.0, 20.0, 10.0),
+        ("Calgary", "4G", 200.0, 40.0, 30.0),
+        ("Calgary", "5G", 300.0, 60.0, 15.0),
+        ("Toronto", "4G", 150.0, 30.0, 20.0),
     ]
 
     df = spark.createDataFrame(
         data,
-        ["city", "download_speed_mbps", "upload_speed_mbps", "latency_ms"],
+        [
+            "city",
+            "network_type",
+            "download_speed_mbps",
+            "upload_speed_mbps",
+            "latency_ms",
+        ],
     )
 
     result = aggregate_city_metrics(df)
-    rows = {row["city"]: row.asDict() for row in result.collect()}
+    rows = {
+        (row["city"], row["network_type"]): row.asDict()
+        for row in result.collect()
+    }
 
-    assert rows["Calgary"]["measurement_count"] == 2
-    assert rows["Calgary"]["avg_download_speed_mbps"] == 150.0
-    assert rows["Calgary"]["avg_upload_speed_mbps"] == 30.0
-    assert rows["Calgary"]["avg_latency_ms"] == 20.0
+    calgary_4g = rows[("Calgary", "4G")]
+    assert calgary_4g["measurement_count"] == 2
+    assert calgary_4g["avg_download_speed_mbps"] == 150.0
+    assert calgary_4g["avg_upload_speed_mbps"] == 30.0
+    assert calgary_4g["avg_latency_ms"] == 20.0
 
-    assert rows["Edmonton"]["measurement_count"] == 1
-    assert rows["Edmonton"]["avg_download_speed_mbps"] == 150.0
+    calgary_5g = rows[("Calgary", "5G")]
+    assert calgary_5g["measurement_count"] == 1
+    assert calgary_5g["avg_download_speed_mbps"] == 300.0
+
+    toronto_4g = rows[("Toronto", "4G")]
+    assert toronto_4g["measurement_count"] == 1
+    assert toronto_4g["avg_download_speed_mbps"] == 150.0
+
+    assert len(rows) == 3

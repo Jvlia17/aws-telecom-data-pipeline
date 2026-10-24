@@ -156,7 +156,7 @@ from pyspark.sql import functions as F
 
 def aggregate_city_metrics(df):
     return (
-        df.groupBy("city")
+        df.groupBy("city", "network_type")
         .agg(
             F.count("*").alias("measurement_count"),
             F.round(F.avg("download_speed_mbps"), 2).alias("avg_download_speed_mbps"),
@@ -164,3 +164,4 @@ def aggregate_city_metrics(df):
             F.round(F.avg("latency_ms"), 2).alias("avg_latency_ms"),
         )
     )
+
